@@ -28,7 +28,7 @@ void confServerSocket(int socket_serveur) {
   }
 }
 
-void startWaitingConnections(int socket-serveur) {
+void startWaitingConnections(int socket_serveur) {
   if (listen(socket-serveur, 10) == -1) {
     perror("listen socket_serveur");
     /* traitement d'erreur */
