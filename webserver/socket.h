@@ -1,2 +1,4 @@
 int createServerSocket();
-int confServerSocket();
+void confServerSocket();
+void startWaitingConnections(int socket-serveur);
+
