@@ -37,16 +37,8 @@ int acceptConnection(int socket_serveur){
   }
   
   /* On peut maintenant dialoguer avec le client */
-  const char *message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
+  const char *message_bienvenue = "                                    xxxxxxx\n                               x xxxxxxxxxxxxx x\n                            x     xxxxxxxxxxx     x\n                                   xxxxxxxxx\n                         x          xxxxxxx          x\n                                     xxxxx\n                        x             xxx             x\n                                       x\n                       xxxxxxxxxxxxxxx   xxxxxxxxxxxxxxx\n                        xxxxxxxxxxxxx     xxxxxxxxxxxxx\n                         xxxxxxxxxxx       xxxxxxxxxxx\n                          xxxxxxxxx         xxxxxxxxx\n                            xxxxxx           xxxxxx\n                              xxx             xxx\n                                  x         x\n                                       x\n";
   write(socket_client, message_bienvenue, strlen(message_bienvenue));
 
   return socket_client;
-}
-
-void messageBienvenue() {
-  char *string ;
-  string= "                                    xxxxxxx\n                               x xxxxxxxxxxxxx x\n                            x     xxxxxxxxxxx     x\n                                   xxxxxxxxx\n                         x          xxxxxxx          x\n                                     xxxxx\n                        x             xxx             x\n                                       x\n                       xxxxxxxxxxxxxxx   xxxxxxxxxxxxxxx\n                        xxxxxxxxxxxxx     xxxxxxxxxxxxx\n                         xxxxxxxxxxx       xxxxxxxxxxx\n                          xxxxxxxxx         xxxxxxxxx\n                            xxxxxx           xxxxxx\n                              xxx             xxx\n                                  x         x\n                                       x\n";
-
-
-  printf(YELLOW "%s" RESET,string);
 }
