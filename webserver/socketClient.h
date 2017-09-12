@@ -1,1 +1,1 @@
-int acceptConnection();
+int acceptConnection(int socket_serveur);

@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-int acceptConnection(){
+int acceptConnection(int socket_serveur){
   int socket_client;
   socket_client = accept(socket_serveur, NULL, NULL);
   if (socket_client == 1){
