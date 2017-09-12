@@ -1,15 +1,19 @@
 #include <stdio.h>
 #include <string.h>
+#include "socket.h"
+#include <stdint.h>
 
-/* Arnord Robbins in the LJ of February '95, describing RCS*/
+
 
 int main(int argc, char **argv){
-
-  if(argc>1 && strcmp(argv[1], "-advice") == 0){
-    printf("Don't Panic !\n");
-    return 42;
+  if(argc != 2) {
+    perror("trop de parametres");
+    return -1;
   }
 
-  printf("Need an advice ?\n");
+  if(creer_serveur((uintptr_t) argv[1]) == -1) {
+    perror("creer_serveur");
+    return -1;
+  }
   return 0;
 }

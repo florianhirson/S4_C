@@ -6,6 +6,5 @@ int creer_serveur(int port) {
   confServerSocket(socket_serveur,port);
   startWaitingConnections(socket_serveur);
 
-
-  return 0;
+  return socket_serveur;
 }
