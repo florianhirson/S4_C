@@ -1,10 +1,13 @@
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 int createServerSocket(){
 
   int socket_serveur;
 
-  socket_serveur = socket(AF_INET, SOCK_STREAM, O);
+  socket_serveur = socket(AF_INET, SOCK_STREAM, 0);
   if (socket_serveur == -1){
     /* traitement de l'erreur */
     perror("socket_serveur");
@@ -23,3 +26,4 @@ void confServerSocket(int socket_serveur) {
     perror("bind socket_serveur");
     /* traitement de l'erreur */
   }
+}
