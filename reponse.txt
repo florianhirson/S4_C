@@ -1,0 +1,4 @@
+Q1 : bind socket_serveur: Address already in use
+Q2 : Ca affiche le message avec un delai
+Q3 : la commande ne fonctionne pas : le serveur est codé pour l'ipv4 et non ipv6
+Q4 : ¯_(ツ)_/¯
