@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int socket(int domain, int type, int protocol){
+int createServerSocket(){
 
   int socket_serveur;
 
