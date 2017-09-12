@@ -10,4 +10,5 @@ int createServerSocket(){
     perror("socket_serveur");
   }
   /*utilisation de la socket serveur */
+  return socket_serveur;
 }
