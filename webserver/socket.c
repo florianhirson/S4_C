@@ -27,3 +27,10 @@ void confServerSocket(int socket_serveur) {
     /* traitement de l'erreur */
   }
 }
+
+void startWaitingConnections(int socket-serveur) {
+  if (listen(socket-serveur, 10) == -1) {
+    perror("listen socket_serveur");
+    /* traitement d'erreur */
+  }
+}

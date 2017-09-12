@@ -1,2 +1,2 @@
 int createServerSocket();
-int confServerSocket();
+void confServerSocket();
