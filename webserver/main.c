@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "socket.h"
+#include "socketClient.h"
 #include <stdint.h>
-
-
+#include <unistd.h>
+#include <stdlib.h>
 
 int main(int argc, char **argv){
   if(argc != 2) {
@@ -11,9 +12,20 @@ int main(int argc, char **argv){
     return -1;
   }
 
-  if(creer_serveur((uintptr_t) argv[1]) == -1) {
+  printf("creation serveur ...\n");
+  int server = creer_serveur(atoi(argv[1]));
+  if(server == -1) {
     perror("creer_serveur");
     return -1;
   }
-  return 0;
+  printf("serveur cree !\n");
+  
+  while(acceptConnection(server) != -1){
+      sleep(1);
+      printf("ok\n");
+  }
+ 
+
+  printf("ENDED\n");
+return 0;
 }
