@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <stdlib.h>
 
 int acceptConnection(int socket_serveur){
 
@@ -25,11 +26,11 @@ int acceptConnection(int socket_serveur){
     const char *message_bienvenue = "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn\n\n PRAISE LORD CTHULHU ^(;,;)^\n\n";
     write(socket_client, message_bienvenue, strlen(message_bienvenue));
   } else {
-    if (close(socket_client) < 0)
-      {
+    if (close(socket_client) < 0){
 	perror(" close ");
-      }
+    }
+    exit(EXIT_SUCCESS);
   }
-
+  
   return socket_client;
 }
