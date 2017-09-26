@@ -23,7 +23,7 @@ void confServerSocket(int socket_serveur, int port) {
   saddr.sin_addr.s_addr = INADDR_ANY; /*écoute sur toutes les interfaces */
 
   int optval = 1;
-  if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, & optval, sizeof (int)) == -1) {
+  if (setsockopt(socket_serveur, SOL_SOCKET, SO_REUSEADDR, & optval, sizeof (int)) == -1) {
     perror ("Can not set SO_REUSEADDR option");
   }
 
