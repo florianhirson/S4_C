@@ -6,12 +6,27 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <sys/wait.h>
 
+void traitement_signal(int sig) {
+  printf("Signal %d reçu\n",sig);
+  while (waitpid(0, NULL, 0) > 0);
+}
 
 void initialiser_signaux(void) {
-  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
-    perror("signal");
+  struct sigaction sa;
+  
+  if ( signal ( SIGPIPE , SIG_IGN ) == SIG_ERR ){
+    perror ( " signal " );
   }
+
+  sa.sa_handler = traitement_signal;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = SA_RESTART;
+  if(sigaction(SIGCHLD,&sa,NULL) == -1) {
+    perror("sigaction(SIGCHLD)");
+  }  
+
 }
 
 int main(int argc, char **argv){
