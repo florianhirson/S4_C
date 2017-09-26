@@ -35,10 +35,19 @@ int acceptConnection(int socket_serveur){
     perror("accept\n");
     /*traitement d'erreur*/
   }
-  
-  /* On peut maintenant dialoguer avec le client */
-  const char *message_bienvenue = "\033[33m                                    xxxxxxx\n                               x xxxxxxxxxxxxx x\n                            x     xxxxxxxxxxx     x\n                                   xxxxxxxxx\n                         x          xxxxxxx          x\n                                     xxxxx\n                        x             xxx             x\n                                       x\n                       xxxxxxxxxxxxxxx   xxxxxxxxxxxxxxx\n                        xxxxxxxxxxxxx     xxxxxxxxxxxxx\n                         xxxxxxxxxxx       xxxxxxxxxxx\n                          xxxxxxxxx         xxxxxxxxx\n                            xxxxxx           xxxxxx\n                              xxx             xxx\n                                  x         x\n                                       x\n\033[0m";
-  write(socket_client, message_bienvenue, strlen(message_bienvenue));
+
+  int pid = fork();
+  if (pid == 0) {
+     
+    /* On peut maintenant dialoguer avec le client */
+    const char *message_bienvenue = "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn\n\n PRAISE LORD CTHULHU ^(;,;)^\n\n";
+    write(socket_client, message_bienvenue, strlen(message_bienvenue));
+  } else {
+    if (close(socket_client) < 0)
+      {
+	perror(" close ");
+      }
+  }
 
   return socket_client;
 }
