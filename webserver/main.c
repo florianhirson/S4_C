@@ -5,6 +5,14 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <signal.h>
+
+
+void initialiser_signaux(void) {
+  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
+    perror("signal");
+  }
+}
 
 int main(int argc, char **argv){
   if(argc != 2) {
@@ -19,6 +27,7 @@ int main(int argc, char **argv){
     return -1;
   }
   printf("serveur cree !\n");
+  initialiser_signaux();
   
   while(acceptConnection(server) != -1){
       sleep(1);
@@ -29,3 +38,5 @@ int main(int argc, char **argv){
   printf("ENDED\n");
 return 0;
 }
+
+
