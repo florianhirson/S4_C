@@ -18,19 +18,34 @@ int acceptConnection(int socket_serveur){
     perror("accept\n");
     /*traitement d'erreur*/
   }
+    int pid = fork();
+    if (pid == 0) { /* Fils */
+      FILE *fp = fdopen(socket_client, "w+");
 
-  int pid = fork();
-  if (pid == 0) {
-     
-    /* On peut maintenant dialoguer avec le client */
-    const char *message_bienvenue = "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn\n\n PRAISE LORD CTHULHU ^(;,;)^\n\n";
-    write(socket_client, message_bienvenue, strlen(message_bienvenue));
-  } else {
-    if (close(socket_client) < 0){
+      char message_client [512];
+
+      /* On peut maintenant dialoguer avec le client */
+      char *message_bienvenue = "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn\n\nPRAISE LORD CTHULHU ^(;,;)^\n\n\0";
+      fprintf(fp, "<Pawnee>\n%s", message_bienvenue);
+    
+      if(fgets(message_client,512,fp)!=NULL) {
+	puts("Message client :\0");
+	puts(message_client);
+      }
+      fprintf(fp, "%s\n", message_client);
+
+
+      
+      fclose(fp);
+      exit(EXIT_SUCCESS);
+  		
+    } else { /* Pere */
+      if (close(socket_client) < 0){
 	perror(" close ");
+      }
+    
     }
-    exit(EXIT_SUCCESS);
-  }
+  
   
   return socket_client;
 }
