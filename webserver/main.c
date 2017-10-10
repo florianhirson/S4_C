@@ -46,7 +46,6 @@ int main(int argc, char **argv){
   
   while(acceptConnection(server) != -1){
       sleep(1);
-      printf("ok\n");
   }
  
 
