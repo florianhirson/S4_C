@@ -43,10 +43,7 @@ int verifHeader(char* messageClient, char* cProtocole) {
   char *requete,*chemin,*protocole;
   char *cMessageClient = malloc(512*sizeof(char));
   strcpy(cMessageClient, messageClient);
-  printf("Message client avant : %s\n",messageClient);
   requete = strtok(cMessageClient, " ");
-  printf("Requete : %s\n",requete);
-  printf("Message client apres : %s\n",messageClient);
   
   if (strcmp(requete,"GET") == 0){
     if(! ((chemin=strtok(NULL, " ")) != NULL && (protocole=strtok(NULL, " ")) != NULL && strtok(NULL, " ") == NULL) ){
