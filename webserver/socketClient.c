@@ -74,26 +74,26 @@ int verifEndOfString(char* messageClient) {
 
 
 void traiterRequeteClient(char * messageClient,FILE * fp) {     
-  char * messageAcceuil="Welcome to Babushka's basement ! Have some kompot kamarad ! ☭☭☭☭\n\r";
-  int succes,succesFin;
+  char * messageAcceuil="Welcome to Babushka's basement ! Have some kompot kamarad ! ☭☭☭☭\n";
+  int code,codeFin;
   int ligne = 0;
   char * cProtocole=malloc(50*sizeof(char));
   
   while(fgets(messageClient,512,fp)!=NULL) {  
     if (ligne == 0) {	
-	succes=verifHeader(messageClient,cProtocole);
-	if(succes<0)
+	code=verifHeader(messageClient,cProtocole);
+	if(code<0)
 	  break;
       } else {
-	succesFin=verifEndOfString(messageClient);
-	if(succesFin<0)
+	codeFin=verifEndOfString(messageClient);
+	if(codeFin<0)
 	  break;
       }
     ligne++;
   }
 
-  if( succes<0 || succesFin<0 || messageClient[0]!='\r'||messageClient[1]!='\n'){      
-    traitementErr(fp,messageClient,succes);   
+  if( code<0 || codeFin<0 || messageClient[0]!='\r'||messageClient[1]!='\n'){      
+    traitementErr(fp,messageClient,code);   
   }  else    {
     sendResponse (fp,200,"OK",messageAcceuil);
   }
@@ -110,9 +110,6 @@ void sendResponse(FILE *client, int code, const char *reasonPhrase, const char *
   printf("Content-Length: %zd\r\n\r\n%s", strlen(messageBody), messageBody);
   fflush(client);
 }
-
-
-
 
 void traitementErr(FILE * fp, char * messageClient,int errorCode){
   while(fgets(messageClient,512,fp)!=NULL);
