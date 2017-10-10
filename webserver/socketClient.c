@@ -114,7 +114,6 @@ void sendResponse(FILE *client, int code, const char *reasonPhrase, const char *
     fprintf(client, "Connection: close\r\n");
   }
   fprintf(client, "Content-Length: %zd\r\n\r\n%s", strlen(messageBody), messageBody);
-  printf("Content-Length: %zd\r\n\r\n%s", strlen(messageBody), messageBody);
   fflush(client);
 }
 
