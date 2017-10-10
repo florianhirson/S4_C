@@ -39,12 +39,19 @@ int acceptConnection(int socket_serveur){
 
  **/
 int verifHeader(char* messageClient, char* cProtocole) {
-  char *requete,*chemin,*protocole;
   
-  requete = strtok(messageClient, " ");
+  char *requete,*chemin,*protocole;
+  char *cMessageClient = malloc(512*sizeof(char));
+  strcpy(cMessageClient, messageClient);
+  printf("Message client avant : %s\n",messageClient);
+  requete = strtok(cMessageClient, " ");
+  printf("Requete : %s\n",requete);
+  printf("Message client apres : %s\n",messageClient);
+  
   if (strcmp(requete,"GET") == 0){
-    if(! ((chemin=strtok(NULL, " ")) != NULL && (protocole=strtok(NULL, " ")) != NULL && strtok(NULL, " ") == NULL) )
+    if(! ((chemin=strtok(NULL, " ")) != NULL && (protocole=strtok(NULL, " ")) != NULL && strtok(NULL, " ") == NULL) ){
       return -1;
+    }
   }else{
     return -1;
   }
@@ -54,9 +61,9 @@ int verifHeader(char* messageClient, char* cProtocole) {
   if(!(strcmp(chemin,"/")==0))
     return -2 ;
   
-  if(!(strcmp(protocole,"HTTP/1.0\r\n") == 0 || strcmp(protocole,"HTTP/1.1\r\n") == 0 ))
+  if(!(strcmp(protocole,"HTTP/1.0\r\n") == 0 || strcmp(protocole,"HTTP/1.1\r\n") == 0 )) {
     return -1;
-  
+  }
   return 0;
 }
 
@@ -67,7 +74,7 @@ int verifHeader(char* messageClient, char* cProtocole) {
 **/
 int verifEndOfString(char* messageClient) {
   if(messageClient[strlen(messageClient)-1]=='\n'&&messageClient[strlen(messageClient)-2]=='\r'){
-   return 0;
+    return 0;
   }
   return -1;
 }
@@ -91,8 +98,8 @@ void traiterRequeteClient(char * messageClient,FILE * fp) {
       }
     ligne++;
   }
-
-  if( code<0 || codeFin<0 || messageClient[0]!='\r'||messageClient[1]!='\n'){      
+  
+  if( code<0 || codeFin<0){
     traitementErr(fp,messageClient,code);   
   }  else    {
     sendResponse (fp,200,"OK",messageAcceuil);
@@ -116,7 +123,7 @@ void traitementErr(FILE * fp, char * messageClient,int errorCode){
   if(errorCode<-1){
     sendResponse (fp,404,"Not Found","Not Found\r\n");  
   }else{
-    sendResponse (fp,400,"Bad Request","Bad request\r\n");
+    sendResponse (fp,400,"Bad request","Bad request\r\n");
   }
 }
 
