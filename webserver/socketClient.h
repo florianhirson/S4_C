@@ -8,4 +8,8 @@
 #include <stdlib.h>
 
 int acceptConnection(int socket_serveur);
-void traiterMessageClient(char * message_client,FILE * fp);
+void traiterRequeteClient(char * message_client,FILE * fp);
+int verifHeader(char* messageClient, char* cProtocole);
+void traiterRequeteClient(char * messageClient,FILE * fp);
+void sendResponse(FILE *client, int code, const char *reasonPhrase, const char *messageBody);
+void traitementErr(FILE * fp, char * messageClient,int errorCode);
