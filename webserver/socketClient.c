@@ -38,8 +38,7 @@ int acceptConnection(int socket_serveur){
    -2 si le chemin est incorrect erreur 404 not found
 
  **/
-int verifHeader(char* messageClient, char* cProtocole) {
-  
+int verifHeader(char* messageClient, char* cProtocole) {  
   char *requete,*chemin,*protocole;
   char *cMessageClient = malloc(512*sizeof(char));
   strcpy(cMessageClient, messageClient);
@@ -83,7 +82,7 @@ void traiterRequeteClient(char * messageClient,FILE * fp) {
   int ligne = 0;
   char * cProtocole=malloc(50*sizeof(char));
   
-  while(fgets(messageClient,512,fp)!=NULL) {  
+  while(fgets_or_exit(messageClient,512,fp)!=NULL) {  
     if (ligne == 0) {	
 	code=verifHeader(messageClient,cProtocole);
 	if(code<0)
@@ -105,6 +104,29 @@ void traiterRequeteClient(char * messageClient,FILE * fp) {
   fclose(fp);
 }
 
+char *fgets_or_exit (char* buffer, int size, FILE* stream) {
+  char * tmp = buffer;
+  char * retour = fgets(buffer, size, stream);
+  if(retour == NULL) {
+    if(tmp[0]!='\r' || tmp[1]!='\n')
+      sendResponse(stream,400,"Bad Request","Bad Request (Line Separator Not Found)\r\n");
+    exit(EXIT_SUCCESS);
+  }
+  return retour;
+}
+
+/**
+ * Analyse la premiere ligne de la requete du client
+ * const char* request_line 1ere ligne de la requete du client
+ * structure de la requete http
+ * Retourne 0 si invalie et 1 sinon
+ **/
+int parse_http_request(const char* request_line, http_request* request) {
+  char* requestMethod, resourceLink, protocolVersion;
+  
+
+}
+
 void sendResponse(FILE *client, int code, const char *reasonPhrase, const char *messageBody) {
   fprintf(client, "HTTP/1.1 %d %s\r\n", code, reasonPhrase);
   if(code != 200) {
@@ -115,7 +137,7 @@ void sendResponse(FILE *client, int code, const char *reasonPhrase, const char *
 }
 
 void traitementErr(FILE * fp, char * messageClient,int errorCode){
-  while(fgets(messageClient,512,fp)!=NULL);
+  while(fgets_or_exit(messageClient,512,fp)!=NULL);
   if(errorCode<-1){
     sendResponse (fp,404,"Not Found","Not Found\r\n");  
   }else{
