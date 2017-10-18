@@ -7,22 +7,24 @@
 #include <string.h>
 #include <stdlib.h>
 
-int acceptConnection(int socket_serveur);
-void traiterRequeteClient(char * message_client,FILE * fp);
-int verifHeader(char* messageClient, char* cProtocole);
-void traiterRequeteClient(char * messageClient,FILE * fp);
-void sendResponse(FILE *client, int code, const char *reasonPhrase, const char *messageBody);
-void traitementErr(FILE * fp, char * messageClient,int errorCode);
-char *fgets_or_exit (char* buffer, int size, FILE* stream);
-
 enum http_method {
   HTTP_GET ,
   HTTP_UNSUPPORTED ,
 };
-typedef struct
-{
+
+typedef struct {
   enum http_method method ;
   int major_version ;
   int minor_version ;
   char * target ;
 } http_request ;
+
+
+int acceptConnection(int socket_serveur);
+void traiterRequeteClient(char * message_client,FILE * fp);
+void send_response(FILE *client, int code, const char *reason_phrase, const char *message_body);
+void send_status( FILE * client , int code , const char * reason_phrase );
+char *fgets_or_exit (char* buffer, int size, FILE* stream);
+void skip_headers(FILE *clients);
+int parse_http_request(const char* request_line, http_request* request);
+

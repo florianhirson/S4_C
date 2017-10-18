@@ -30,13 +30,18 @@ void initialiser_signaux(void) {
 }
 
 int main(int argc, char **argv){
-  if(argc != 2) {
+  int port;
+  if(argc == 1) 
+   port = 8080;  
+  if(argc == 2) 
+    port = atoi(argv[1]);
+  if(argc > 2) {
     perror("trop de parametres");
     return -1;
   }
 
   printf("creation serveur ...\n");
-  int server = creer_serveur(atoi(argv[1]));
+  int server = creer_serveur(port);
   if(server == -1) {
     perror("creer_serveur");
     return -1;

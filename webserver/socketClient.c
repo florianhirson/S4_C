@@ -20,98 +20,55 @@ int acceptConnection(int socket_serveur){
     traiterRequeteClient(message_client, fp);
     exit(EXIT_SUCCESS);
   		
-  } else { /* Pere */
+  } else{ /* Pere */
     if (close(socket_client) < 0){
       perror(" close ");
-    }
-    
-  }
-  
-  
+    }    
+  }  
   return socket_client;
 }
 
-/**
-   Verifie si l'entete de la requete est correct
-   0 si correct
-   -1 si requete incorrecte erreur 400 bad request
-   -2 si le chemin est incorrect erreur 404 not found
-
- **/
-int verifHeader(char* messageClient, char* cProtocole) {  
-  char *requete,*chemin,*protocole;
-  char *cMessageClient = malloc(512*sizeof(char));
-  strcpy(cMessageClient, messageClient);
-  requete = strtok(cMessageClient, " ");
-  
-  if (strcmp(requete,"GET") == 0){
-    if(! ((chemin=strtok(NULL, " ")) != NULL && (protocole=strtok(NULL, " ")) != NULL && strtok(NULL, " ") == NULL) ){
-      return -1;
-    }
-  }else{
-    return -1;
-  }
-
-  strcpy(cProtocole,protocole);
-  
-  if(!(strcmp(chemin,"/")==0))
-    return -2 ;
-  
-  if(!(strcmp(protocole,"HTTP/1.0\r\n") == 0 || strcmp(protocole,"HTTP/1.1\r\n") == 0 )) {
-    return -1;
-  }
-  return 0;
-}
-
-/**
-   Verifie si il y a une ligne vide à la fin de la requete envoyée par le client
-   0 si ligne vide
-   -1 sinon
-**/
-int verifEndOfString(char* messageClient) {
-  if(messageClient[strlen(messageClient)-1]=='\n'&&messageClient[strlen(messageClient)-2]=='\r'){
-    return 0;
-  }
-  return -1;
-}
 
 
 void traiterRequeteClient(char * messageClient,FILE * fp) {     
   char * messageAcceuil="Welcome to Babushka's basement ! Have some kompot kamarad ! ☭☭☭☭\n";
-  int code,codeFin;
+  int code;
   int ligne = 0;
-  char * cProtocole=malloc(50*sizeof(char));
-  
+  http_request *request = malloc(1024);
+
   while(fgets_or_exit(messageClient,512,fp)!=NULL) {  
     if (ligne == 0) {	
-	code=verifHeader(messageClient,cProtocole);
-	if(code<0)
-	  break;
-      } else {
-	codeFin=verifEndOfString(messageClient);
-	if(codeFin<0)
-	  break;
-      }
+      code = parse_http_request(messageClient, request);
+      printf("code etat 1 : %d\n", code);
+      if(code == 0)
+	break;
+    } else {
+      
+    }
     ligne++;
   }
-  
-  if( code<0 || codeFin<0){
-    traitementErr(fp,messageClient,code);   
-  }  else    {
-    sendResponse (fp,200,"OK",messageAcceuil);
-  }
 
+  if (code == 0) {
+    printf("code : %d\n",code);
+    send_response (fp, 400, " Bad Request ", " Bad request \r \n ");
+  } else if (request->method == HTTP_UNSUPPORTED)
+    send_response (fp, 405, " Method Not Allowed ", " Method Not Allowed \r \n ");
+  else if (strcmp(request->target, "/" ) == 0)
+    send_response(fp, 200, " OK ", messageAcceuil);
+  else
+    send_response(fp, 404, " Not Found ", " Not Found \r \n ");
   fclose(fp);
 }
 
 char *fgets_or_exit (char* buffer, int size, FILE* stream) {
-  char * tmp = buffer;
+  //char * tmp = buffer;
   char * retour = fgets(buffer, size, stream);
+  /*
   if(retour == NULL) {
-    if(tmp[0]!='\r' || tmp[1]!='\n')
-      sendResponse(stream,400,"Bad Request","Bad Request (Line Separator Not Found)\r\n");
+      send_response(stream,400,"Bad Request","Bad Request (Line Separator Not Found)\r\n");
+    }
     exit(EXIT_SUCCESS);
-  }
+    }*/
   return retour;
 }
 
@@ -122,27 +79,76 @@ char *fgets_or_exit (char* buffer, int size, FILE* stream) {
  * Retourne 0 si invalie et 1 sinon
  **/
 int parse_http_request(const char* request_line, http_request* request) {
-  char* requestMethod, resourceLink, protocolVersion;
-  
+  char *requestMethod, *resourceLink, *protocolVersion;
+  int rl_minor_version, rl_major_version;
 
+  char *cp;
+  cp = strdup(request_line);
+  requestMethod = strtok(cp, " ");
+  resourceLink = strtok(NULL, " ");
+  protocolVersion = strtok(NULL, "/");
+  
+  rl_major_version = (int) protocolVersion[5] - 48;
+  rl_minor_version = (int) protocolVersion[7] - 48;
+
+  if (strcmp(requestMethod, "GET") == 0){
+    request->method=HTTP_GET;
+    printf("Erreur de methode get\n");
+  } else {
+    printf("Erreur non supporté\n");
+    request->method=HTTP_UNSUPPORTED;
+    printf(requestMethod);
+    free(cp);
+    return 0;
+  }
+
+  request->major_version = rl_major_version;  
+  request->minor_version = rl_minor_version;
+  printf("minor version : %d\n",rl_minor_version);
+  printf("major version : %d\n",rl_major_version);
+ 
+  if (rl_major_version != 1 || rl_minor_version < 0 || rl_minor_version > 1) {
+    printf("Erreur de version\n");
+    return 0;    
+  }
+  
+  request -> target=resourceLink;
+  
+  if (request->target[0]!='/') {
+    printf("Erreur de cible\n");
+    return 0;
+  }
+  
+  return 1;
 }
 
-void sendResponse(FILE *client, int code, const char *reasonPhrase, const char *messageBody) {
-  fprintf(client, "HTTP/1.1 %d %s\r\n", code, reasonPhrase);
+void skip_headers(FILE *clients) {
+  char buffer[1024];
+  while(fgets_or_exit(buffer, sizeof(buffer), clients)!=NULL && (strncmp(buffer, "\r\n", 2) != 0)) {
+
+  }
+}
+
+void send_status( FILE * client , int code , const char * reason_phrase ) {
+  fprintf(client, "HTTP/1.1 %d %s\r\n", code, reason_phrase);
   if(code != 200) {
     fprintf(client, "Connection: close\r\n");
   }
-  fprintf(client, "Content-Length: %zd\r\n\r\n%s", strlen(messageBody), messageBody);
-  fflush(client);
+
 }
 
-void traitementErr(FILE * fp, char * messageClient,int errorCode){
-  while(fgets_or_exit(messageClient,512,fp)!=NULL);
-  if(errorCode<-1){
-    sendResponse (fp,404,"Not Found","Not Found\r\n");  
-  }else{
-    sendResponse (fp,400,"Bad request","Bad request\r\n");
+void send_response(FILE *client, int code, const char *reason_phrase, const char *message_body) {
+  send_status(client,code, reason_phrase);
+  if(code != 200){
+    fprintf(client, "Content-Length: %zd\r\n\r\n%s", strlen(message_body), message_body);
+    printf("Content-Length: %zd\r\n\r\n%s", strlen(message_body), message_body);
+  } else {
+    fprintf(client, "%s", message_body);
   }
+  
+  fflush(client);
+
 }
+
 
 
